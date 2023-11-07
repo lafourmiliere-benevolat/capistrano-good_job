@@ -2,7 +2,16 @@
 
 plugin = self
 
-namespace :good_job do
+namespace :good_job do # rubocop:disable Metrics
+  desc "Generate good_job systemd service"
+  task :generate do
+    on roles(fetch(:good_job_role)) do |role|
+      service_file = File.expand_path("../../templates/good_job.service.erb", __FILE__)
+      erb = File.read(service_file)
+      File.write 'good_job.service', ERB.new(erb, trim_mode: "-").result(binding)
+    end
+  end
+
   desc "Install good_job systemd service"
   task :install do
     on roles(fetch(:good_job_role)) do |role|

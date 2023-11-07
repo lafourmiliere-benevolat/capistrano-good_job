@@ -8,7 +8,10 @@ Type=simple
 WorkingDirectory=<%= current_path %>
 ExecStart=<%= capture(:echo, SSHKit.config.command_map[:bundle]).strip %> exec good_job start
 
-Environment='RAILS_ENV=production'
+Environment='RAILS_ENV=<%= fetch(:stage) %>'
+<% fetch(:default_env).reject{ |k, _| k.to_s == 'path' }.each do |variable, value| -%>
+Environment='<%= variable.to_s.upcase %>=<%= value.to_s %>'
+<% end -%>
 
 ExecReload=/bin/kill -s USR2 $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
@@ -17,8 +20,8 @@ ExecStop=/bin/kill -s TERM $MAINPID
 RestartSec=1
 Restart=on-failure
 
-<%="StandardOutput=append:#{fetch(:good_job_access_log)}" if fetch(:good_job_access_log) %>
-<%="StandardError=append:#{fetch(:good_job_error_log)}" if fetch(:good_job_error_log) %>
+<%= "StandardOutput=append:#{fetch(:good_job_access_log)}" if fetch(:good_job_access_log) %>
+<%= "StandardError=append:#{fetch(:good_job_error_log)}" if fetch(:good_job_error_log) %>
 
 SyslogIdentifier=<%= fetch(:good_job_service_unit_name) %>
 
