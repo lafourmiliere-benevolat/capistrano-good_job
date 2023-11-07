@@ -21,7 +21,7 @@ Add this line to your application's Gemfile:
 
 ```ruby
 group :development do
-  gem 'capistrano-good-job', require: false
+  gem 'capistrano-good_job', require: false
 end
 ```
 
