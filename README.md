@@ -3,6 +3,7 @@
 Adds the following capistrano commands:
 
 ```sh
+good_job:generate                   # Generate locally good_job systemd service unit file
 good_job:disable                    # Disable good_job systemd service
 good_job:enable                     # Enable good_job systemd service
 good_job:install                    # Install good_job systemd service
