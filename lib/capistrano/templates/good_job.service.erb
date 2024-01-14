@@ -3,7 +3,9 @@ Description=GoodJob background job
 After=network.target
 
 [Service]
-Type=simple
+Type=<%= fetch(:good_job_service_unit_type) %>
+# If systemd doesn't get pinged by GoodJob at least this often, restart GoodJob.
+WatchdogSec=5s
 
 WorkingDirectory=<%= current_path %>
 ExecStart=<%= capture(:echo, SSHKit.config.command_map[:bundle]).strip %> exec good_job start
