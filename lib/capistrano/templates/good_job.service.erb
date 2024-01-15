@@ -10,7 +10,7 @@ WatchdogSec=5s
 WorkingDirectory=<%= current_path %>
 ExecStart=<%= capture(:echo, SSHKit.config.command_map[:bundle]).strip %> exec good_job start
 
-Environment='RAILS_ENV=<%= fetch(:stage) %>'
+Environment='RAILS_ENV=<%= fetch(:good_job_env) %>'
 <% fetch(:default_env).reject{ |k, _| k.to_s == 'path' }.each do |variable, value| -%>
 Environment='<%= variable.to_s.upcase %>=<%= value.to_s %>'
 <% end -%>
