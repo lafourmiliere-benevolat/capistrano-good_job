@@ -21,11 +21,19 @@ namespace :good_job do # rubocop:disable Metrics
       erb = File.read(service_file)
       file = StringIO.new(ERB.new(erb, trim_mode: "-").result(binding))
 
+      unit_filename = "#{fetch(:good_job_service_unit_name)}.service"
+      upload! file, "#{fetch(:tmp_dir)}/#{unit_filename}"
+
       systemd_path = fetch(:good_job_systemd_conf_dir)
-      path = "#{systemd_path}/#{fetch(:good_job_service_unit_name)}.service"
+
+      if fetch(:good_job_systemctl_user) == :system
+        sudo "mv #{fetch(:tmp_dir)}/#{unit_filename} #{systemd_path}"
+      else
+        execute :mkdir, "-p", systemd_path
+        execute :mv, "#{fetch(:tmp_dir)}/#{unit_filename}", "#{systemd_path}"
+      end
 
       execute :mkdir, "-p", systemd_path
-      upload! file, path
 
       # Reload systemd
       plugin.execute_systemd("daemon-reload")

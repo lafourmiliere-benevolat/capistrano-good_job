@@ -1,4 +1,18 @@
 module Capistrano
+  module GoodJobCommon
+    def good_job_user(role = nil)
+      if role.nil?
+        fetch(:good_job_user)
+      else
+        properties = role.properties
+        properties.fetch(:good_job_user) || # local property for good job only
+          fetch(:good_job_user) ||
+          properties.fetch(:run_as) || # global property across multiple capistrano gems
+          role.user
+      end
+    end
+  end
+
   class GoodJob < Capistrano::Plugin
     def set_defaults
       set_if_empty :good_job_role, "db"
@@ -7,6 +21,8 @@ module Capistrano
       set_if_empty :good_job_env, -> { fetch(:rack_env, fetch(:rails_env, fetch(:stage))) }
       set_if_empty :good_job_service_unit_type, -> { "notify" }
       set_if_empty :good_job_service_unit_name, -> { "#{fetch(:application)}_good_job_#{fetch(:stage)}" }
+      set_if_empty :good_job_systemctl_bin, -> { fetch(:systemctl_bin, '/bin/systemctl') }
+      set_if_empty :good_job_systemctl_user, -> { fetch(:systemctl_user, :user) }
       set_if_empty :good_job_systemd_conf_dir, -> { fetch_systemd_unit_path }
     end
 
@@ -18,9 +34,26 @@ module Capistrano
       after "deploy:finished", "good_job:restart"
     end
 
+    def systemd_command(*args)
+      command = [fetch(:good_job_systemctl_bin)]
+
+      unless fetch(:good_job_systemctl_user) == :system
+        command << "--user"
+      end
+
+      command + args
+    end
+
+    def sudo_if_needed(*command)
+      if fetch(:good_job_systemctl_user) == :system
+        backend.sudo command.map(&:to_s).join(" ")
+      else
+        backend.execute(*command)
+      end
+    end
+
     def execute_systemd(*args)
-      command = ["/bin/systemctl", "--user"] + args
-      backend.execute(*command)
+      sudo_if_needed(*systemd_command(*args))
     end
 
     def fetch_systemd_unit_path
