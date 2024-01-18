@@ -24,6 +24,8 @@ module Capistrano
       set_if_empty :good_job_systemctl_bin, -> { fetch(:systemctl_bin, '/bin/systemctl') }
       set_if_empty :good_job_systemctl_user, -> { fetch(:systemctl_user, :user) }
       set_if_empty :good_job_systemd_conf_dir, -> { fetch_systemd_unit_path }
+
+      set :good_job_service_unit_env_vars, {}
     end
 
     def define_tasks
