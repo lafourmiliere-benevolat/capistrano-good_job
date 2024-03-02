@@ -6,9 +6,9 @@ namespace :good_job do # rubocop:disable Metrics
   desc "Generate good_job systemd service"
   task :generate do
     on roles(fetch(:good_job_role)) do |role|
-      service_file = File.expand_path("../../templates/good_job.service.erb", __FILE__)
+      service_file = File.expand_path("../templates/good_job.service.erb", __dir__)
       erb = File.read(service_file)
-      File.write 'good_job.service', ERB.new(erb, trim_mode: "-").result(binding)
+      File.write "good_job.service", ERB.new(erb, trim_mode: "-").result(binding)
     end
   end
 
@@ -17,7 +17,7 @@ namespace :good_job do # rubocop:disable Metrics
     on roles(fetch(:good_job_role)) do |role|
       execute :mkdir, "-p", fetch(:good_job_systemd_conf_dir)
 
-      service_file = File.expand_path("../../templates/good_job.service.erb", __FILE__)
+      service_file = File.expand_path("../templates/good_job.service.erb", __dir__)
       erb = File.read(service_file)
       file = StringIO.new(ERB.new(erb, trim_mode: "-").result(binding))
 
@@ -30,7 +30,7 @@ namespace :good_job do # rubocop:disable Metrics
         sudo "mv #{fetch(:tmp_dir)}/#{unit_filename} #{systemd_path}"
       else
         execute :mkdir, "-p", systemd_path
-        execute :mv, "#{fetch(:tmp_dir)}/#{unit_filename}", "#{systemd_path}"
+        execute :mv, "#{fetch(:tmp_dir)}/#{unit_filename}", systemd_path.to_s
       end
 
       execute :mkdir, "-p", systemd_path
@@ -44,7 +44,7 @@ namespace :good_job do # rubocop:disable Metrics
   desc "Uninstall good_job systemd service"
   task :uninstall do
     invoke "good_job:disable"
-    on roles(fetch(:good_job_role)) do |role|
+    on roles(fetch(:good_job_role)) do |_role|
       systemd_path = fetch(:good_job_systemd_conf_dir)
       execute :rm, "-f", "#{systemd_path}/#{fetch(:good_job_service_unit_name)}*"
 

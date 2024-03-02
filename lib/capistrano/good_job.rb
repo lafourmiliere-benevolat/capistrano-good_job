@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Capistrano
   module GoodJobCommon
     def good_job_user(role = nil)
@@ -21,7 +23,7 @@ module Capistrano
       set_if_empty :good_job_env, -> { fetch(:rack_env, fetch(:rails_env, fetch(:stage))) }
       set_if_empty :good_job_service_unit_type, -> { "notify" }
       set_if_empty :good_job_service_unit_name, -> { "#{fetch(:application)}_good_job_#{fetch(:stage)}" }
-      set_if_empty :good_job_systemctl_bin, -> { fetch(:systemctl_bin, '/bin/systemctl') }
+      set_if_empty :good_job_systemctl_bin, -> { fetch(:systemctl_bin, "/bin/systemctl") }
       set_if_empty :good_job_systemctl_user, -> { fetch(:systemctl_user, :user) }
       set_if_empty :good_job_systemd_conf_dir, -> { fetch_systemd_unit_path }
 
@@ -29,7 +31,7 @@ module Capistrano
     end
 
     def define_tasks
-      eval_rakefile File.expand_path("../tasks/good_job.rake", __FILE__)
+      eval_rakefile File.expand_path("tasks/good_job.rake", __dir__)
     end
 
     def register_hooks
@@ -39,9 +41,7 @@ module Capistrano
     def systemd_command(*args)
       command = [fetch(:good_job_systemctl_bin)]
 
-      unless fetch(:good_job_systemctl_user) == :system
-        command << "--user"
-      end
+      command << "--user" unless fetch(:good_job_systemctl_user) == :system
 
       command + args
     end
