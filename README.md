@@ -22,7 +22,9 @@ Add this line to your application's Gemfile:
 
 ```ruby
 group :development do
-  gem 'capistrano-good_job', require: false
+  source "https://rubygems.pkg.github.com/lafourmiliere-benevolat" do
+    gem "capistrano-good_job", "0.1.6", require: false
+  end
 end
 ```
 
