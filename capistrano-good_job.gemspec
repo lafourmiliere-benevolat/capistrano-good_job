@@ -9,17 +9,17 @@ Gem::Specification.new do |spec|
 
   spec.summary = "Adds support for GoodJob to Capistrano 3.x"
   spec.description = "Adds support for GoodJob to Capistrano 3.x"
-  spec.homepage = "https://github.com/codeur/capistrano-good_job"
+  spec.homepage = "https://github.com/lafourmiliere-benevolat/capistrano-good_job"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6.0"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
-  spec.metadata["allowed_push_host"] = "https://gems.codeur.com"
+  spec.metadata["allowed_push_host"] = "https://rubygems.pkg.github.com/lafourmiliere-benevolat"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/codeur/capistrano-good_job"
-  spec.metadata["changelog_uri"] = "https://github.com/codeur/capistrano-good_job/releases"
+  spec.metadata["source_code_uri"] = "https://github.com/lafourmiliere-benevolat/capistrano-good_job"
+  spec.metadata["changelog_uri"] = "https://github.com/lafourmiliere-benevolat/capistrano-good_job/releases"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
