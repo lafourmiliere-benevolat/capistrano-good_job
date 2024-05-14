@@ -8,14 +8,17 @@ on:
       - 'lib/capistrano/good_job/version.rb'
   workflow_dispatch:
 
+permissions:
+  attestations: write
+  contents: read
+  id-token: write
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     environment:
       name: production
-    permissions:
-      packages: write
-      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -28,14 +31,24 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
-      - name: Publish to Github Packages
+      - name: Configure private Rubygems registry
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
           chmod 0600 $HOME/.gem/credentials
           printf -- "---\n:github: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-          gem build *.gemspec
-          gem push --KEY github --host https://rubygems.pkg.github.com/${OWNER} *.gem
         env:
           GEM_HOST_API_KEY: "Bearer ${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Build
+        run: gem build capistrano-good_job.gemspec
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'capistrano-good_job-*.gem'
+
+      - name: Publish
+        run: gem push --KEY github --host https://rubygems.pkg.github.com/${OWNER} *.gem
+        env:
           OWNER: ${{ github.repository_owner }}
